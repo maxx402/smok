@@ -1,4 +1,4 @@
-package com.example.smoke
+package com.github.gusmoke
 
 import io.flutter.embedding.android.FlutterActivity
 
