@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
 import '../services/storage_service.dart';
 import '../models/user_settings.dart';
+import 'privacy_policy_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -261,6 +262,52 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ],
                 theme,
                 icon: Icons.notifications_active_rounded,
+              ),
+              const SizedBox(height: 24),
+              _buildSection(
+                '关于',
+                [
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.grey.withValues(alpha: 0.05),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: ListTile(
+                      leading: Icon(
+                        Icons.policy_outlined,
+                        color: theme.colorScheme.primary,
+                      ),
+                      title: const Text(
+                        '隐私政策',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 16,
+                        ),
+                      ),
+                      subtitle: Text(
+                        '查看我们如何保护您的隐私',
+                        style: TextStyle(
+                          color: Colors.grey.withValues(alpha: 0.7),
+                          fontSize: 14,
+                        ),
+                      ),
+                      trailing: Icon(
+                        Icons.chevron_right,
+                        color: Colors.grey.withValues(alpha: 0.5),
+                      ),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const PrivacyPolicyScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+                theme,
+                icon: Icons.info_outline_rounded,
               ),
               const SizedBox(height: 32),
             ],

@@ -58,6 +58,9 @@ dependencies:
   # 路径处理
   path: ^1.9.0
 
+  # WebView
+  webview_flutter: ^4.10.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

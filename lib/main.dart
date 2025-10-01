@@ -16,6 +16,7 @@ class QuitSmokingApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: '戒烟小助理',
+      debugShowCheckedModeBanner: false,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       theme: ThemeData(
