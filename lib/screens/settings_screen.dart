@@ -211,30 +211,51 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       color: Colors.grey.withValues(alpha: 0.05),
                       borderRadius: BorderRadius.circular(16),
                     ),
-                    child: SwitchListTile(
-                      title: Text(
-                        l10n.enableNotifications,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w500,
-                          fontSize: 16,
+                    child: Opacity(
+                      opacity: 0.5,
+                      child: SwitchListTile(
+                        title: Row(
+                          children: [
+                            Text(
+                              l10n.enableNotifications,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w500,
+                                fontSize: 16,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: Colors.orange.withValues(alpha: 0.2),
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                  color: Colors.orange.withValues(alpha: 0.5),
+                                  width: 1,
+                                ),
+                              ),
+                              child: const Text(
+                                '正在开发中',
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.orange,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                      subtitle: Text(
-                        '接收戒烟提醒和鼓励消息',
-                        style: TextStyle(
-                          color: Colors.grey.withValues(alpha: 0.7),
-                          fontSize: 14,
+                        subtitle: Text(
+                          '接收戒烟提醒和鼓励消息',
+                          style: TextStyle(
+                            color: Colors.grey.withValues(alpha: 0.7),
+                            fontSize: 14,
+                          ),
                         ),
+                        value: false,
+                        activeThumbColor: theme.colorScheme.primary,
+                        onChanged: null,
                       ),
-                      value: _userSettings!.notificationsEnabled,
-                      activeThumbColor: theme.colorScheme.primary,
-                      onChanged: (value) {
-                        setState(() {
-                          _userSettings = _userSettings!.copyWith(
-                            notificationsEnabled: value,
-                          );
-                        });
-                      },
                     ),
                   ),
                 ],
