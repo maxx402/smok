@@ -1,11 +1,11 @@
 {
-    "name": "smoke",
-    "short_name": "smoke",
+    "name": "戒烟计数助理",
+    "short_name": "戒烟助理",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "戒烟助理App - 帮助用户科学戒烟的移动应用",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
