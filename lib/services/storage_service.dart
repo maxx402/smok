@@ -92,17 +92,13 @@ class StorageService {
   // Daily Check-ins
   Future<void> saveDailyCheckIn(DailyCheckIn checkIn) async {
     await _ensureInitialized();
-    await _database!.insert(
-      'checkins',
-      {
-        'date': checkIn.date.millisecondsSinceEpoch,
-        'mood': checkIn.mood,
-        'cravingIntensity': checkIn.cravingIntensity,
-        'notes': checkIn.notes,
-        'achievements': jsonEncode(checkIn.achievements),
-      },
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
+    await _database!.insert('checkins', {
+      'date': checkIn.date.millisecondsSinceEpoch,
+      'mood': checkIn.mood,
+      'cravingIntensity': checkIn.cravingIntensity,
+      'notes': checkIn.notes,
+      'achievements': jsonEncode(checkIn.achievements),
+    }, conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   Future<DailyCheckIn?> getDailyCheckIn(DateTime date) async {
@@ -113,7 +109,10 @@ class StorageService {
     final List<Map<String, dynamic>> maps = await _database!.query(
       'checkins',
       where: 'date >= ? AND date < ?',
-      whereArgs: [dateStart.millisecondsSinceEpoch, dateEnd.millisecondsSinceEpoch],
+      whereArgs: [
+        dateStart.millisecondsSinceEpoch,
+        dateEnd.millisecondsSinceEpoch,
+      ],
     );
 
     if (maps.isNotEmpty) {
@@ -123,7 +122,9 @@ class StorageService {
         mood: map['mood'],
         cravingIntensity: map['cravingIntensity'],
         notes: map['notes'],
-        achievements: List<String>.from(jsonDecode(map['achievements'] ?? '[]')),
+        achievements: List<String>.from(
+          jsonDecode(map['achievements'] ?? '[]'),
+        ),
       );
     }
     return null;
@@ -137,29 +138,31 @@ class StorageService {
       limit: limit,
     );
 
-    return maps.map((map) => DailyCheckIn(
-      date: DateTime.fromMillisecondsSinceEpoch(map['date']),
-      mood: map['mood'],
-      cravingIntensity: map['cravingIntensity'],
-      notes: map['notes'],
-      achievements: List<String>.from(jsonDecode(map['achievements'] ?? '[]')),
-    )).toList();
+    return maps
+        .map(
+          (map) => DailyCheckIn(
+            date: DateTime.fromMillisecondsSinceEpoch(map['date']),
+            mood: map['mood'],
+            cravingIntensity: map['cravingIntensity'],
+            notes: map['notes'],
+            achievements: List<String>.from(
+              jsonDecode(map['achievements'] ?? '[]'),
+            ),
+          ),
+        )
+        .toList();
   }
 
   // Resistance Logs
   Future<void> saveResistanceLog(ResistanceLog log) async {
     await _ensureInitialized();
-    await _database!.insert(
-      'resistance_logs',
-      {
-        'id': log.id,
-        'timestamp': log.timestamp.millisecondsSinceEpoch,
-        'mood': log.mood,
-        'temptationIntensity': log.temptationIntensity,
-        'notes': log.notes,
-      },
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
+    await _database!.insert('resistance_logs', {
+      'id': log.id,
+      'timestamp': log.timestamp.millisecondsSinceEpoch,
+      'mood': log.mood,
+      'temptationIntensity': log.temptationIntensity,
+      'notes': log.notes,
+    }, conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   Future<List<ResistanceLog>> getTodayResistanceLogs() async {
@@ -171,17 +174,24 @@ class StorageService {
     final List<Map<String, dynamic>> maps = await _database!.query(
       'resistance_logs',
       where: 'timestamp >= ? AND timestamp < ?',
-      whereArgs: [dayStart.millisecondsSinceEpoch, dayEnd.millisecondsSinceEpoch],
+      whereArgs: [
+        dayStart.millisecondsSinceEpoch,
+        dayEnd.millisecondsSinceEpoch,
+      ],
       orderBy: 'timestamp DESC',
     );
 
-    return maps.map((map) => ResistanceLog(
-      id: map['id'],
-      timestamp: DateTime.fromMillisecondsSinceEpoch(map['timestamp']),
-      mood: map['mood'],
-      temptationIntensity: map['temptationIntensity'],
-      notes: map['notes'],
-    )).toList();
+    return maps
+        .map(
+          (map) => ResistanceLog(
+            id: map['id'],
+            timestamp: DateTime.fromMillisecondsSinceEpoch(map['timestamp']),
+            mood: map['mood'],
+            temptationIntensity: map['temptationIntensity'],
+            notes: map['notes'],
+          ),
+        )
+        .toList();
   }
 
   Future<List<ResistanceLog>> getResistanceLogsHistory({int? limit}) async {
@@ -192,13 +202,17 @@ class StorageService {
       limit: limit,
     );
 
-    return maps.map((map) => ResistanceLog(
-      id: map['id'],
-      timestamp: DateTime.fromMillisecondsSinceEpoch(map['timestamp']),
-      mood: map['mood'],
-      temptationIntensity: map['temptationIntensity'],
-      notes: map['notes'],
-    )).toList();
+    return maps
+        .map(
+          (map) => ResistanceLog(
+            id: map['id'],
+            timestamp: DateTime.fromMillisecondsSinceEpoch(map['timestamp']),
+            mood: map['mood'],
+            temptationIntensity: map['temptationIntensity'],
+            notes: map['notes'],
+          ),
+        )
+        .toList();
   }
 
   Future<int> getResistanceCountForDate(DateTime date) async {
@@ -217,39 +231,41 @@ class StorageService {
   // Achievements
   Future<void> saveAchievement(Achievement achievement) async {
     await _ensureInitialized();
-    await _database!.insert(
-      'achievements',
-      {
-        'id': achievement.id,
-        'titleKey': achievement.titleKey,
-        'descriptionKey': achievement.descriptionKey,
-        'iconName': achievement.iconName,
-        'unlockedAt': achievement.unlockedAt?.millisecondsSinceEpoch,
-        'type': achievement.type.toString(),
-        'target': achievement.target?.toString(),
-      },
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
+    await _database!.insert('achievements', {
+      'id': achievement.id,
+      'titleKey': achievement.titleKey,
+      'descriptionKey': achievement.descriptionKey,
+      'iconName': achievement.iconName,
+      'unlockedAt': achievement.unlockedAt?.millisecondsSinceEpoch,
+      'type': achievement.type.toString(),
+      'target': achievement.target?.toString(),
+    }, conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   Future<List<Achievement>> getAchievements() async {
     await _ensureInitialized();
-    final List<Map<String, dynamic>> maps = await _database!.query('achievements');
+    final List<Map<String, dynamic>> maps = await _database!.query(
+      'achievements',
+    );
 
-    return maps.map((map) => Achievement(
-      id: map['id'],
-      titleKey: map['titleKey'],
-      descriptionKey: map['descriptionKey'],
-      iconName: map['iconName'],
-      unlockedAt: map['unlockedAt'] != null
-          ? DateTime.fromMillisecondsSinceEpoch(map['unlockedAt'])
-          : null,
-      type: AchievementType.values.firstWhere(
-        (e) => e.toString() == map['type'],
-        orElse: () => AchievementType.time,
-      ),
-      target: map['target'],
-    )).toList();
+    return maps
+        .map(
+          (map) => Achievement(
+            id: map['id'],
+            titleKey: map['titleKey'],
+            descriptionKey: map['descriptionKey'],
+            iconName: map['iconName'],
+            unlockedAt: map['unlockedAt'] != null
+                ? DateTime.fromMillisecondsSinceEpoch(map['unlockedAt'])
+                : null,
+            type: AchievementType.values.firstWhere(
+              (e) => e.toString() == map['type'],
+              orElse: () => AchievementType.time,
+            ),
+            target: map['target'],
+          ),
+        )
+        .toList();
   }
 
   Future<void> _ensureInitialized() async {
