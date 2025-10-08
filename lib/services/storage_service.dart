@@ -4,6 +4,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import '../models/user_settings.dart';
 import '../models/daily_checkin.dart';
+import '../models/user_feedback.dart';
 
 class StorageService {
   static final StorageService _instance = StorageService._internal();
@@ -87,6 +88,36 @@ class StorageService {
   Future<void> saveUserSettings(UserSettings settings) async {
     await _ensureInitialized();
     await _prefs!.setString('user_settings', jsonEncode(settings.toJson()));
+  }
+
+  // User Feedback
+  Future<void> saveUserFeedback(UserFeedbackEntry feedback) async {
+    await _ensureInitialized();
+    final existingEntries =
+        _prefs!.getStringList('user_feedbacks') ?? <String>[];
+    final updatedEntries = List<String>.from(existingEntries)
+      ..add(jsonEncode(feedback.toJson()));
+    await _prefs!.setStringList('user_feedbacks', updatedEntries);
+  }
+
+  Future<List<UserFeedbackEntry>> getUserFeedbackHistory() async {
+    await _ensureInitialized();
+    final entries = _prefs!.getStringList('user_feedbacks');
+    if (entries == null) {
+      return [];
+    }
+    return entries
+        .map((encoded) {
+          try {
+            final Map<String, dynamic> decoded =
+                jsonDecode(encoded) as Map<String, dynamic>;
+            return UserFeedbackEntry.fromJson(decoded);
+          } catch (_) {
+            return null;
+          }
+        })
+        .whereType<UserFeedbackEntry>()
+        .toList();
   }
 
   // Daily Check-ins

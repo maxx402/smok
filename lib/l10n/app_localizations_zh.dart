@@ -124,6 +124,22 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get resetAllData => '重置所有数据';
 
+  // Feedback
+  @override
+  String get feedbackSectionTitle => '意见反馈';
+  @override
+  String get feedbackDescription => '欢迎提交使用中的想法或问题，我们将持续优化。目前仅支持文本反馈。';
+  @override
+  String get feedbackPlaceholder => '请输入您的反馈内容...';
+  @override
+  String get submitFeedback => '提交反馈';
+  @override
+  String get feedbackSuccess => '感谢反馈，内容已在本地保存。';
+  @override
+  String get feedbackEmptyError => '请先填写反馈内容。';
+  @override
+  String get feedbackFailure => '提交失败，请稍后重试。';
+
   // Common
   @override
   String get save => '保存';

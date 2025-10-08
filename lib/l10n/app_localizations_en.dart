@@ -52,11 +52,13 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get health_20min_title => 'Blood Pressure & Pulse Recovery';
   @override
-  String get health_20min_desc => 'Heart rate and blood pressure drop to normal levels';
+  String get health_20min_desc =>
+      'Heart rate and blood pressure drop to normal levels';
   @override
   String get health_8hours_title => 'Carbon Monoxide Levels Drop';
   @override
-  String get health_8hours_desc => 'Carbon monoxide levels in blood drop, oxygen levels return to normal';
+  String get health_8hours_desc =>
+      'Carbon monoxide levels in blood drop, oxygen levels return to normal';
   @override
   String get health_24hours_title => 'Heart Attack Risk Decreases';
   @override
@@ -64,27 +66,33 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get health_2days_title => 'Taste & Smell Improve';
   @override
-  String get health_2days_desc => 'Nerve endings for taste and smell start to recover';
+  String get health_2days_desc =>
+      'Nerve endings for taste and smell start to recover';
   @override
   String get health_3days_title => 'Breathing Improves';
   @override
-  String get health_3days_desc => 'Bronchial tubes begin to relax, breathing becomes easier';
+  String get health_3days_desc =>
+      'Bronchial tubes begin to relax, breathing becomes easier';
   @override
   String get health_1week_title => 'Circulation Improves';
   @override
-  String get health_1week_desc => 'Blood circulation improves, nicotine is completely eliminated';
+  String get health_1week_desc =>
+      'Blood circulation improves, nicotine is completely eliminated';
   @override
   String get health_1month_title => 'Lung Function Increases';
   @override
-  String get health_1month_desc => 'Lung cilia regrow, lung function significantly improves';
+  String get health_1month_desc =>
+      'Lung cilia regrow, lung function significantly improves';
   @override
   String get health_3months_title => 'Cardiovascular Health';
   @override
-  String get health_3months_desc => 'Cardiovascular function significantly improves';
+  String get health_3months_desc =>
+      'Cardiovascular function significantly improves';
   @override
   String get health_1year_title => 'Heart Disease Risk Halved';
   @override
-  String get health_1year_desc => 'Risk of coronary heart disease is 50% less than a smoker';
+  String get health_1year_desc =>
+      'Risk of coronary heart disease is 50% less than a smoker';
 
   // Settings Screen
   @override
@@ -123,6 +131,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get importData => 'Import Data';
   @override
   String get resetAllData => 'Reset All Data';
+
+  // Feedback
+  @override
+  String get feedbackSectionTitle => 'Feedback';
+  @override
+  String get feedbackDescription =>
+      'Share ideas or issues to help improve the app. Text only for now.';
+  @override
+  String get feedbackPlaceholder => 'Describe your feedback...';
+  @override
+  String get submitFeedback => 'Submit Feedback';
+  @override
+  String get feedbackSuccess => 'Thanks! Your feedback was saved locally.';
+  @override
+  String get feedbackEmptyError =>
+      'Please enter some feedback before submitting.';
+  @override
+  String get feedbackFailure => 'Failed to save feedback. Try again later.';
 
   // Common
   @override

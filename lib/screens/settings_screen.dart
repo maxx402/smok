@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
 import '../services/storage_service.dart';
 import '../models/user_settings.dart';
+import '../models/user_feedback.dart';
 import 'privacy_policy_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -14,11 +15,14 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   UserSettings? _userSettings;
   bool _isLoading = false;
+  bool _isSubmittingFeedback = false;
 
   final TextEditingController _nicknameController = TextEditingController();
   final TextEditingController _dailyExpenseController = TextEditingController();
-  final TextEditingController _dailyCigarettesController = TextEditingController();
+  final TextEditingController _dailyCigarettesController =
+      TextEditingController();
   final TextEditingController _smokingYearsController = TextEditingController();
+  final TextEditingController _feedbackController = TextEditingController();
 
   @override
   void initState() {
@@ -32,6 +36,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     _dailyExpenseController.dispose();
     _dailyCigarettesController.dispose();
     _smokingYearsController.dispose();
+    _feedbackController.dispose();
     super.dispose();
   }
 
@@ -54,10 +59,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
     setState(() => _isLoading = true);
 
     final updatedSettings = _userSettings!.copyWith(
-      nickname: _nicknameController.text.isNotEmpty ? _nicknameController.text : null,
-      dailyExpense: double.tryParse(_dailyExpenseController.text) ?? _userSettings!.dailyExpense,
-      dailyCigarettes: int.tryParse(_dailyCigarettesController.text) ?? _userSettings!.dailyCigarettes,
-      smokingYears: int.tryParse(_smokingYearsController.text) ?? _userSettings!.smokingYears,
+      nickname: _nicknameController.text.isNotEmpty
+          ? _nicknameController.text
+          : null,
+      dailyExpense:
+          double.tryParse(_dailyExpenseController.text) ??
+          _userSettings!.dailyExpense,
+      dailyCigarettes:
+          int.tryParse(_dailyCigarettesController.text) ??
+          _userSettings!.dailyCigarettes,
+      smokingYears:
+          int.tryParse(_smokingYearsController.text) ??
+          _userSettings!.smokingYears,
     );
 
     await StorageService().saveUserSettings(updatedSettings);
@@ -76,15 +89,58 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
+  Future<void> _submitFeedback() async {
+    final l10n = AppLocalizations.of(context);
+    final content = _feedbackController.text.trim();
+
+    if (content.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.feedbackEmptyError),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
+
+    setState(() => _isSubmittingFeedback = true);
+
+    try {
+      await StorageService().saveUserFeedback(
+        UserFeedbackEntry(content: content),
+      );
+
+      if (!mounted) return;
+
+      setState(() => _isSubmittingFeedback = false);
+      _feedbackController.clear();
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.feedbackSuccess),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } catch (_) {
+      if (!mounted) return;
+
+      setState(() => _isSubmittingFeedback = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.feedbackFailure),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
 
     if (_userSettings == null) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     return Scaffold(
@@ -120,7 +176,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
               style: TextButton.styleFrom(
                 backgroundColor: Colors.transparent,
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -226,7 +285,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             ),
                             const SizedBox(width: 8),
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 2,
+                              ),
                               decoration: BoxDecoration(
                                 color: Colors.orange.withValues(alpha: 0.2),
                                 borderRadius: BorderRadius.circular(8),
@@ -262,6 +324,51 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ],
                 theme,
                 icon: Icons.notifications_active_rounded,
+              ),
+              const SizedBox(height: 24),
+              _buildSection(
+                l10n.feedbackSectionTitle,
+                [
+                  Text(
+                    l10n.feedbackDescription,
+                    style: TextStyle(
+                      color: Colors.grey.withValues(alpha: 0.7),
+                      fontSize: 14,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  _buildFeedbackField(hint: l10n.feedbackPlaceholder),
+                  const SizedBox(height: 20),
+                  SizedBox(
+                    width: double.infinity,
+                    child: FilledButton(
+                      onPressed: _isSubmittingFeedback ? null : _submitFeedback,
+                      style: FilledButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                      ),
+                      child: _isSubmittingFeedback
+                          ? const SizedBox(
+                              height: 18,
+                              width: 18,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2.5,
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  Colors.white,
+                                ),
+                              ),
+                            )
+                          : Text(
+                              l10n.submitFeedback,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 16,
+                              ),
+                            ),
+                    ),
+                  ),
+                ],
+                theme,
+                icon: Icons.feedback_rounded,
               ),
               const SizedBox(height: 24),
               _buildSection(
@@ -317,7 +424,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Widget _buildSection(String title, List<Widget> children, ThemeData theme, {IconData? icon}) {
+  Widget _buildSection(
+    String title,
+    List<Widget> children,
+    ThemeData theme, {
+    IconData? icon,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -330,11 +442,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   color: theme.colorScheme.primary.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(
-                  icon,
-                  color: theme.colorScheme.primary,
-                  size: 20,
-                ),
+                child: Icon(icon, color: theme.colorScheme.primary, size: 20),
               ),
               const SizedBox(width: 12),
             ],
@@ -362,9 +470,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           child: Padding(
             padding: const EdgeInsets.all(24.0),
-            child: Column(
-              children: children,
-            ),
+            child: Column(children: children),
           ),
         ),
       ],
@@ -382,9 +488,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       decoration: BoxDecoration(
         color: Colors.grey.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: Colors.grey.withValues(alpha: 0.2),
-        ),
+        border: Border.all(color: Colors.grey.withValues(alpha: 0.2)),
       ),
       child: TextField(
         controller: controller,
@@ -404,12 +508,37 @@ class _SettingsScreenState extends State<SettingsScreen> {
             color: Colors.grey.withValues(alpha: 0.7),
             fontWeight: FontWeight.w500,
           ),
-          hintStyle: TextStyle(
-            color: Colors.grey.withValues(alpha: 0.5),
-          ),
+          hintStyle: TextStyle(color: Colors.grey.withValues(alpha: 0.5)),
           border: InputBorder.none,
           contentPadding: EdgeInsets.symmetric(
             horizontal: prefixIcon != null ? 12 : 16,
+            vertical: 16,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFeedbackField({required String hint}) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.grey.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.grey.withValues(alpha: 0.2)),
+      ),
+      child: TextField(
+        controller: _feedbackController,
+        minLines: 3,
+        maxLines: 5,
+        keyboardType: TextInputType.multiline,
+        textInputAction: TextInputAction.newline,
+        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+        decoration: InputDecoration(
+          hintText: hint,
+          hintStyle: TextStyle(color: Colors.grey.withValues(alpha: 0.5)),
+          border: InputBorder.none,
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
             vertical: 16,
           ),
         ),
