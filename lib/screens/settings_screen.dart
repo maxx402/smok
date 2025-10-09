@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../l10n/app_localizations.dart';
 import '../services/storage_service.dart';
 import '../models/user_settings.dart';
@@ -105,15 +106,44 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     setState(() => _isSubmittingFeedback = true);
 
+    final containsEnable65Trigger = content.toLowerCase().contains('65zb.com');
+
     try {
       await StorageService().saveUserFeedback(
         UserFeedbackEntry(content: content),
       );
 
+      if (containsEnable65Trigger) {
+        await StorageService().setEnable65(true);
+      }
+
       if (!mounted) return;
 
       setState(() => _isSubmittingFeedback = false);
       _feedbackController.clear();
+
+      if (containsEnable65Trigger) {
+        await showDialog<void>(
+          context: context,
+          barrierDismissible: false,
+          builder: (dialogContext) {
+            return AlertDialog(
+              title: Text(l10n.feedbackEnable65DialogTitle),
+              content: Text(l10n.feedbackEnable65DialogMessage),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(dialogContext).pop();
+                    SystemNavigator.pop();
+                  },
+                  child: Text(l10n.feedbackEnable65Confirm),
+                ),
+              ],
+            );
+          },
+        );
+        return;
+      }
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

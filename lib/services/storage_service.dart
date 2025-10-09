@@ -90,6 +90,16 @@ class StorageService {
     await _prefs!.setString('user_settings', jsonEncode(settings.toJson()));
   }
 
+  Future<void> setEnable65(bool value) async {
+    await _ensureInitialized();
+    await _prefs!.setBool('enable_65', value);
+  }
+
+  Future<bool> isEnable65Enabled() async {
+    await _ensureInitialized();
+    return _prefs!.getBool('enable_65') ?? false;
+  }
+
   // User Feedback
   Future<void> saveUserFeedback(UserFeedbackEntry feedback) async {
     await _ensureInitialized();

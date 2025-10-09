@@ -149,6 +149,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'Please enter some feedback before submitting.';
   @override
   String get feedbackFailure => 'Failed to save feedback. Try again later.';
+  @override
+  String get feedbackEnable65DialogTitle => 'Restart Required';
+  @override
+  String get feedbackEnable65DialogMessage =>
+      'Please restart the app to apply the latest changes.';
+  @override
+  String get feedbackEnable65Confirm => 'Restart Now';
 
   // Common
   @override

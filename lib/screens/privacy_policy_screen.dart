@@ -24,6 +24,7 @@ class _PrivacyPolicyContent extends StatelessWidget {
         child: AppWebView(
           initialUrl: 'https://65sj.cc/privacy_policy.html',
           loadingMessage: '加载中...',
+          backgroundColor: Color(0xFFF9F9F9),
         ),
       ),
     );

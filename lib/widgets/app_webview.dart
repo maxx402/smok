@@ -8,12 +8,14 @@ class AppWebView extends StatefulWidget {
     this.loadingMessage,
     this.onPageStarted,
     this.onPageFinished,
+    this.backgroundColor,
   });
 
   final String initialUrl;
   final String? loadingMessage;
   final ValueChanged<String>? onPageStarted;
   final ValueChanged<String>? onPageFinished;
+  final Color? backgroundColor;
 
   @override
   State<AppWebView> createState() => _AppWebViewState();
@@ -69,10 +71,13 @@ class _AppWebViewState extends State<AppWebView> {
     final theme = Theme.of(context);
     return Stack(
       children: [
-        WebViewWidget(controller: _controller),
+        Container(
+          color: widget.backgroundColor,
+          child: WebViewWidget(controller: _controller),
+        ),
         if (_isLoading)
           Container(
-            color: theme.scaffoldBackgroundColor,
+            color: widget.backgroundColor ?? theme.scaffoldBackgroundColor,
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,

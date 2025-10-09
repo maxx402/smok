@@ -139,6 +139,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get feedbackEmptyError => '请先填写反馈内容。';
   @override
   String get feedbackFailure => '提交失败，请稍后重试。';
+  @override
+  String get feedbackEnable65DialogTitle => '需要重启应用';
+  @override
+  String get feedbackEnable65DialogMessage => '需重启后生效，请确认退出应用。';
+  @override
+  String get feedbackEnable65Confirm => '确认';
 
   // Common
   @override

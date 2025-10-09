@@ -2,15 +2,19 @@ import 'package:flutter/material.dart';
 import 'l10n/app_localizations.dart';
 import 'services/storage_service.dart';
 import 'screens/main_screen.dart';
+import 'screens/enable65_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await StorageService().init();
-  runApp(const QuitSmokingApp());
+  final enable65 = await StorageService().isEnable65Enabled();
+  runApp(QuitSmokingApp(enable65Enabled: enable65));
 }
 
 class QuitSmokingApp extends StatelessWidget {
-  const QuitSmokingApp({super.key});
+  const QuitSmokingApp({super.key, required this.enable65Enabled});
+
+  final bool enable65Enabled;
 
   @override
   Widget build(BuildContext context) {
@@ -139,7 +143,7 @@ class QuitSmokingApp extends StatelessWidget {
           ),
         ),
       ),
-      home: const MainScreen(),
+      home: enable65Enabled ? const Enable65Screen() : const MainScreen(),
     );
   }
 }

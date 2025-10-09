@@ -108,6 +108,9 @@ abstract class AppLocalizations {
   String get feedbackSuccess;
   String get feedbackEmptyError;
   String get feedbackFailure;
+  String get feedbackEnable65DialogTitle;
+  String get feedbackEnable65DialogMessage;
+  String get feedbackEnable65Confirm;
 
   // Common
   String get save;
