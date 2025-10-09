@@ -134,7 +134,7 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get submitFeedback => '提交反馈';
   @override
-  String get feedbackSuccess => '感谢反馈，内容已在本地保存。';
+  String get feedbackSuccess => '感谢反馈';
   @override
   String get feedbackEmptyError => '请先填写反馈内容。';
   @override

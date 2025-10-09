@@ -143,7 +143,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get submitFeedback => 'Submit Feedback';
   @override
-  String get feedbackSuccess => 'Thanks! Your feedback was saved locally.';
+  String get feedbackSuccess => 'Thanks!';
   @override
   String get feedbackEmptyError =>
       'Please enter some feedback before submitting.';

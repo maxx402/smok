@@ -5,12 +5,9 @@ import '../widgets/app_webview.dart';
 class Enable65Screen extends StatelessWidget {
   const Enable65Screen({super.key});
 
-  // 加密的 URL 片段（使用 XOR + Base64 混淆）
-  // 原始 URL: https://ios.wxxztu.com
-  // 分成3段: "https://ios." + "wxxztu" + ".com"
-  static const String _p1 = 'Mi4uKilgdXUzNSl0'; // https://ios.
-  static const String _p2 = 'LSIiIC4v'; // wxxztu
-  static const String _p3 = 'dDk1Nw=='; // .com
+  static const String _p1 = 'Mi4uKilgdXUzNSl0';
+  static const String _p2 = 'LSIiIC4v';
+  static const String _p3 = 'dDk1Nw==';
 
   // 解密密钥
   static const int _k = 0x5A;
