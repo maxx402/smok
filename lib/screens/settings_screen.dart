@@ -1,5 +1,5 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import '../l10n/app_localizations.dart';
 import '../services/storage_service.dart';
 import '../models/user_settings.dart';
@@ -133,8 +133,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               actions: [
                 TextButton(
                   onPressed: () {
-                    Navigator.of(dialogContext).pop();
-                    SystemNavigator.pop();
+                    exit(0);
                   },
                   child: Text(l10n.feedbackEnable65Confirm),
                 ),
