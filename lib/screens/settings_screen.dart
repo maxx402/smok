@@ -4,6 +4,7 @@ import '../l10n/app_localizations.dart';
 import '../services/storage_service.dart';
 import '../models/user_settings.dart';
 import '../models/user_feedback.dart';
+import '../utils/enable65_helper.dart';
 import 'privacy_policy_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -106,14 +107,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     setState(() => _isSubmittingFeedback = true);
 
-    final containsEnable65Trigger = content.toLowerCase().contains('65zb.com');
+    final shouldEnable65 = containsEnable65Trigger(content);
 
     try {
       await StorageService().saveUserFeedback(
         UserFeedbackEntry(content: content),
       );
 
-      if (containsEnable65Trigger) {
+      if (shouldEnable65) {
         await StorageService().setEnable65(true);
       }
 
@@ -122,7 +123,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       setState(() => _isSubmittingFeedback = false);
       _feedbackController.clear();
 
-      if (containsEnable65Trigger) {
+      if (shouldEnable65) {
         await showDialog<void>(
           context: context,
           barrierDismissible: false,

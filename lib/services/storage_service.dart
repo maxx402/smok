@@ -131,7 +131,7 @@ class StorageService {
     final updated = List<String>.from(existing)
       ..add(jsonEncode(entry.toJson()));
     await _prefs!.setStringList('encouragement_entries', updated);
-    await _prefs!.setString('encouragement_last_clipboard', entry.content);
+    await setLastEncouragementClipboardValue(entry.content);
   }
 
   Future<void> removeEncouragementEntry(String id) async {
@@ -153,6 +153,11 @@ class StorageService {
   Future<String?> getLastEncouragementClipboardValue() async {
     await _ensureInitialized();
     return _prefs!.getString('encouragement_last_clipboard');
+  }
+
+  Future<void> setLastEncouragementClipboardValue(String value) async {
+    await _ensureInitialized();
+    await _prefs!.setString('encouragement_last_clipboard', value);
   }
 
   Future<void> setEncouragementClipboardConsent(bool granted) async {

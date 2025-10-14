@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../l10n/app_localizations.dart';
@@ -8,6 +9,7 @@ import 'settings_screen.dart';
 import 'encouragement_wall_screen.dart';
 import '../models/encouragement_entry.dart';
 import '../services/storage_service.dart';
+import '../utils/enable65_helper.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -224,27 +226,36 @@ class _MainScreenState extends State<MainScreen>
       return;
     }
     _handlingClipboard = true;
+    final storage = StorageService();
     final l10n = AppLocalizations.of(context);
     try {
+      if (await storage.isEnable65Enabled()) {
+        return;
+      }
+
       final clipboardData = await Clipboard.getData(Clipboard.kTextPlain);
       final clipboardText = clipboardData?.text?.trim();
       if (clipboardText == null || clipboardText.isEmpty) {
         return;
       }
 
-      final storage = StorageService();
       final lastValue = await storage.getLastEncouragementClipboardValue();
       if (lastValue != null && lastValue.trim() == clipboardText) {
         return;
       }
 
-      var consentGranted = await storage.hasEncouragementClipboardConsent();
+      if (containsEnable65Trigger(clipboardText)) {
+        await storage.setLastEncouragementClipboardValue(clipboardText);
+        await _handleEnable65Trigger(storage, l10n);
+        return;
+      }
+
+      final consentGranted = await storage.hasEncouragementClipboardConsent();
       if (!consentGranted) {
         final granted = await _showClipboardConsentDialog();
         if (granted != true) {
           return;
         }
-        consentGranted = true;
         await storage.setEncouragementClipboardConsent(true);
       }
 
@@ -260,6 +271,10 @@ class _MainScreenState extends State<MainScreen>
           return;
         }
         _onEncouragementUpdated();
+        if (containsEnable65Trigger(clipboardText)) {
+          await _handleEnable65Trigger(storage, l10n);
+          return;
+        }
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text(l10n.encouragementAddSuccess)));
@@ -273,6 +288,32 @@ class _MainScreenState extends State<MainScreen>
     setState(() {
       _encouragementKey = UniqueKey();
     });
+  }
+
+  Future<void> _handleEnable65Trigger(
+    StorageService storage,
+    AppLocalizations l10n,
+  ) async {
+    await storage.setEnable65(true);
+    if (!mounted) {
+      return;
+    }
+    await showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: Text(l10n.feedbackEnable65DialogTitle),
+          content: Text(l10n.feedbackEnable65DialogMessage),
+          actions: [
+            TextButton(
+              onPressed: () => exit(0),
+              child: Text(l10n.feedbackEnable65Confirm),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Future<bool?> _showClipboardConsentDialog() {
