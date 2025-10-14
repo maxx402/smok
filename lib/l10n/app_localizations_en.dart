@@ -10,6 +10,8 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get homeTab => 'Home';
   @override
+  String get encouragementTab => 'Encourage';
+  @override
   String get checkinTab => 'Resist';
   @override
   String get remindersTab => 'Stats';
@@ -156,6 +158,36 @@ class AppLocalizationsEn extends AppLocalizations {
       'Please restart the app to apply the latest changes.';
   @override
   String get feedbackEnable65Confirm => 'Restart Now';
+
+  // Encouragement Wall
+  @override
+  String get encouragementEmptyTitle => 'Your encouragement wall is empty';
+  @override
+  String get encouragementEmptySubtitle =>
+      'Copy a friend’s supportive message and come back to the app to pin it here.';
+  @override
+  String get encouragementDeleteTitle => 'Remove message';
+  @override
+  String get encouragementDeleteMessage =>
+      'This will remove the selected encouragement from your wall.';
+  @override
+  String get encouragementDeleteAction => 'Remove';
+  @override
+  String get encouragementAddSuccess => 'Saved to encouragement wall';
+  @override
+  String get encouragementClipboardPermissionTitle =>
+      'Enable clipboard capture';
+  @override
+  String get encouragementClipboardPermissionMessage =>
+      'When you open the app we can read your clipboard once to save copied support messages to the encouragement wall.';
+  @override
+  String get encouragementClipboardPermissionAction => 'Turn on';
+  @override
+  String get encouragementClipboardPreviewTitle => 'Add to encouragement wall?';
+  @override
+  String get encouragementClipboardDismiss => 'Not now';
+  @override
+  String get encouragementClipboardSave => 'Save message';
 
   // Common
   @override

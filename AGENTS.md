@@ -1,35 +1,19 @@
 # Repository Guidelines
 
 ## Project Structure & Module Organization
-The Flutter entry point lives in `lib/main.dart`, with feature code grouped in:
-- `lib/screens/` UI screens (e.g., `home_screen.dart`, `settings_screen.dart`).
-- `lib/models/`, `lib/services/`, `lib/utils/`, and `lib/widgets/` for domain data, data access, helpers, and reusable widgets.
-Localization classes reside under `lib/l10n/`.
-Cross-platform scaffolding is provided in `android/`, `ios/`, `macos/`, `linux/`, `windows/`, and `web/`.
-Shared assets, including `logo.jpg` and `privacy_policy.html`, sit at the repository root.
-Unit and widget tests belong in `test/`, following the existing `widget_test.dart` pattern.
+The Flutter entry point is `lib/main.dart`, with feature-specific UIs in `lib/screens/`. Shared models, services, utilities, and widgets live under `lib/models/`, `lib/services/`, `lib/utils/`, and `lib/widgets/`. Localization resources reside in `lib/l10n/`. Platform boilerplate is maintained in `android/`, `ios/`, `macos/`, `linux/`, `windows/`, and `web/`. Repository-level assets such as `logo.jpg` and `privacy_policy.html` stay at the root, while all unit and widget tests belong in `test/`.
 
 ## Build, Test, and Development Commands
-- `flutter pub get` installs and locks dependencies from `pubspec.yaml`.
-- `flutter run` launches the app on the current device or simulator; use `--profile` for performance checks.
-- `flutter analyze` runs static analysis with the rules in `analysis_options.yaml`.
-- `flutter test` executes the Dart test suite; append `--coverage` to collect line coverage.
-- `flutter build apk` or the relevant `flutter build <platform>` variants create release binaries.
+Run `flutter pub get` after dependency edits to sync the lockfile. Use `flutter run` for local development; add `--profile` when diagnosing performance. Execute `flutter analyze` before every pull request to satisfy the lints in `analysis_options.yaml`. Trigger the automated suite with `flutter test`, and append `--coverage` when you need line coverage metrics.
 
 ## Coding Style & Naming Conventions
-Follow the default Flutter formatter (two-space indentation); run `dart format lib test`.
-Keep classes and widgets in `UpperCamelCase`, functions and variables in `lowerCamelCase`, and constants in `kUpperCamelCase`.
-Favor composing widgets over deeply nested conditionals.
-Adhere to the `flutter_lints` ruleset; address analyzer warnings instead of suppressing them.
+Format Dart sources with `dart format lib test` to enforce two-space indentation and trailing newline conventions. Follow `flutter_lints`; fix warnings instead of suppressing them. Name classes and widgets in UpperCamelCase, functions and variables in lowerCamelCase, and constants with `kUpperCamelCase`. Favor composable widgets over deeply nested conditionals to keep trees readable.
 
 ## Testing Guidelines
-Add new tests alongside features using the `*_test.dart` naming scheme.
-Prefer widget tests for UI logic and pure Dart tests for services and utils.
-Use fake or in-memory data sources when exercising `sqflite` or `shared_preferences`.
-Ensure critical flows (check-in tracking, reminders, policy viewer) have regression coverage before merging.
+Keep tests in `test/` and mirror the `*_test.dart` naming pattern. Use widget tests for UI-backed logic and pure Dart tests for utilities and services; rely on fakes or in-memory stores for plugins like `sqflite` or `shared_preferences`. Ensure critical flows—check-in tracking, reminders, and the policy viewer—retain regression coverage by running `flutter test --coverage` before merges.
 
 ## Commit & Pull Request Guidelines
-Write concise, imperative commit messages (`Add check-in chart widgets`); avoid one-word placeholders.
-Group related changes per commit and run `flutter analyze && flutter test` before committing.
-Pull requests should summarize user-facing impact, mention affected screens/services, and link issues or task IDs.
-Attach screenshots or screen recordings when modifying UI, and describe any manual verification steps performed.
+Author commits using concise, imperative subject lines such as `Add check-in chart widgets`. Group related changes together and run `flutter analyze && flutter test` prior to committing. Pull requests should summarize user-facing impact, call out affected screens or services, link relevant issues or task IDs, and include screenshots or recordings whenever UI shifts. Document any manual verification steps so reviewers can reproduce them quickly.
+
+## Environment & Security Notes
+Keep platform tooling up to date with the Flutter SDK version fixed in this repo; verify with `flutter --version`. Do not commit credentials or generated secrets—store sensitive data in environment variables or secure storage. When handling assets, confirm license compatibility and note any usage restrictions in pull request descriptions.

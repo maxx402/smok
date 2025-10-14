@@ -5,6 +5,7 @@ import 'package:path/path.dart';
 import '../models/user_settings.dart';
 import '../models/daily_checkin.dart';
 import '../models/user_feedback.dart';
+import '../models/encouragement_entry.dart';
 
 class StorageService {
   static final StorageService _instance = StorageService._internal();
@@ -98,6 +99,70 @@ class StorageService {
   Future<bool> isEnable65Enabled() async {
     await _ensureInitialized();
     return _prefs!.getBool('enable_65') ?? false;
+  }
+
+  // Encouragement Wall
+  Future<List<EncouragementEntry>> getEncouragementEntries() async {
+    await _ensureInitialized();
+    final rawEntries = _prefs!.getStringList('encouragement_entries');
+    if (rawEntries == null) {
+      return [];
+    }
+
+    return rawEntries
+        .map((encoded) {
+          try {
+            final Map<String, dynamic> decoded =
+                jsonDecode(encoded) as Map<String, dynamic>;
+            return EncouragementEntry.fromJson(decoded);
+          } catch (_) {
+            return null;
+          }
+        })
+        .whereType<EncouragementEntry>()
+        .toList()
+      ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+  }
+
+  Future<void> addEncouragementEntry(EncouragementEntry entry) async {
+    await _ensureInitialized();
+    final existing =
+        _prefs!.getStringList('encouragement_entries') ?? <String>[];
+    final updated = List<String>.from(existing)
+      ..add(jsonEncode(entry.toJson()));
+    await _prefs!.setStringList('encouragement_entries', updated);
+    await _prefs!.setString('encouragement_last_clipboard', entry.content);
+  }
+
+  Future<void> removeEncouragementEntry(String id) async {
+    await _ensureInitialized();
+    final existing =
+        _prefs!.getStringList('encouragement_entries') ?? <String>[];
+    final filtered = existing.where((encoded) {
+      try {
+        final Map<String, dynamic> decoded =
+            jsonDecode(encoded) as Map<String, dynamic>;
+        return decoded['id'] != id;
+      } catch (_) {
+        return true;
+      }
+    }).toList();
+    await _prefs!.setStringList('encouragement_entries', filtered);
+  }
+
+  Future<String?> getLastEncouragementClipboardValue() async {
+    await _ensureInitialized();
+    return _prefs!.getString('encouragement_last_clipboard');
+  }
+
+  Future<void> setEncouragementClipboardConsent(bool granted) async {
+    await _ensureInitialized();
+    await _prefs!.setBool('encouragement_clipboard_consent', granted);
+  }
+
+  Future<bool> hasEncouragementClipboardConsent() async {
+    await _ensureInitialized();
+    return _prefs!.getBool('encouragement_clipboard_consent') ?? false;
   }
 
   // User Feedback

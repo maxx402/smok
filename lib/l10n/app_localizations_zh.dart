@@ -10,6 +10,8 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get homeTab => '首页';
   @override
+  String get encouragementTab => '鼓励墙';
+  @override
   String get checkinTab => '抵抗';
   @override
   String get remindersTab => '统计';
@@ -145,6 +147,33 @@ class AppLocalizationsZh extends AppLocalizations {
   String get feedbackEnable65DialogMessage => '需重启后生效，请确认退出应用。';
   @override
   String get feedbackEnable65Confirm => '确认';
+
+  // Encouragement Wall
+  @override
+  String get encouragementEmptyTitle => '鼓励墙还没有内容';
+  @override
+  String get encouragementEmptySubtitle => '复制好友的鼓励话语，再返回应用即可一键保存到这里。';
+  @override
+  String get encouragementDeleteTitle => '删除鼓励';
+  @override
+  String get encouragementDeleteMessage => '将从鼓励墙中移除这条鼓励信息。';
+  @override
+  String get encouragementDeleteAction => '删除';
+  @override
+  String get encouragementAddSuccess => '已保存到鼓励墙';
+  @override
+  String get encouragementClipboardPermissionTitle => '需要读取剪贴板';
+  @override
+  String get encouragementClipboardPermissionMessage =>
+      '每次回到应用时，我们会读取一次剪贴板，将复制的鼓励语句保存到鼓励墙中。';
+  @override
+  String get encouragementClipboardPermissionAction => '好的';
+  @override
+  String get encouragementClipboardPreviewTitle => '要保存到鼓励墙吗？';
+  @override
+  String get encouragementClipboardDismiss => '暂不';
+  @override
+  String get encouragementClipboardSave => '保存鼓励';
 
   // Common
   @override

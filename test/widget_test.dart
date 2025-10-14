@@ -13,7 +13,7 @@ import 'package:smoke/main.dart';
 void main() {
   testWidgets('App launches smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(const QuitSmokingApp());
+    await tester.pumpWidget(const QuitSmokingApp(enable65Enabled: false));
 
     // Wait for the app to build
     await tester.pump(const Duration(seconds: 1));

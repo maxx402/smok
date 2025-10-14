@@ -38,6 +38,7 @@ abstract class AppLocalizations {
 
   // Bottom Navigation
   String get homeTab;
+  String get encouragementTab;
   String get checkinTab;
   String get remindersTab;
   String get settingsTab;
@@ -111,6 +112,20 @@ abstract class AppLocalizations {
   String get feedbackEnable65DialogTitle;
   String get feedbackEnable65DialogMessage;
   String get feedbackEnable65Confirm;
+
+  // Encouragement Wall
+  String get encouragementEmptyTitle;
+  String get encouragementEmptySubtitle;
+  String get encouragementDeleteTitle;
+  String get encouragementDeleteMessage;
+  String get encouragementDeleteAction;
+  String get encouragementAddSuccess;
+  String get encouragementClipboardPermissionTitle;
+  String get encouragementClipboardPermissionMessage;
+  String get encouragementClipboardPermissionAction;
+  String get encouragementClipboardPreviewTitle;
+  String get encouragementClipboardDismiss;
+  String get encouragementClipboardSave;
 
   // Common
   String get save;
