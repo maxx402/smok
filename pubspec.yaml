@@ -60,6 +60,7 @@ dependencies:
 
   # WebView - 全平台支持，功能强大
   flutter_inappwebview: ^6.1.5
+  fl_umeng: ^4.0.2
 
 dev_dependencies:
   flutter_test:

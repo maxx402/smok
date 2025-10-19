@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fl_umeng/fl_umeng.dart';
 import 'l10n/app_localizations.dart';
 import 'services/storage_service.dart';
 import 'screens/main_screen.dart';
@@ -7,6 +8,21 @@ import 'screens/enable65_screen.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await StorageService().init();
+
+  // 初始化友盟统计
+  try {
+    final bool? data = await FlUMeng().init(
+      androidAppKey: '', // 不需要安卓统计
+      iosAppKey: '689efe31e563686f427e09a4',
+      channel: 'App Store',
+    );
+    FlUMeng().setLogEnabled(false);
+    FlUMeng().setPageCollectionMode(true);
+    debugPrint('UMeng initialized successfully: $data');
+  } catch (e) {
+    debugPrint('UMeng initialization failed: $e');
+  }
+
   final enable65 = await StorageService().isEnable65Enabled();
   runApp(QuitSmokingApp(enable65Enabled: enable65));
 }
