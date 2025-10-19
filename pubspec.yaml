@@ -58,8 +58,8 @@ dependencies:
   # 路径处理
   path: ^1.9.0
 
-  # WebView
-  webview_flutter: ^4.10.0
+  # WebView - 全平台支持，功能强大
+  flutter_inappwebview: ^6.1.5
 
 dev_dependencies:
   flutter_test:
