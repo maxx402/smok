@@ -62,6 +62,9 @@ dependencies:
   flutter_inappwebview: ^6.1.5
   fl_umeng: ^4.0.2
 
+  # URL启动器 - 用于打开外部浏览器
+  url_launcher: ^6.2.5
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

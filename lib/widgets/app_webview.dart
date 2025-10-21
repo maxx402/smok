@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AppWebView extends StatefulWidget {
   const AppWebView({
@@ -144,8 +145,46 @@ class _AppWebViewState extends State<AppWebView> {
             // 暂不处理下载，只是打印日志
           },
           shouldOverrideUrlLoading: (controller, navigationAction) async {
-            // 允许所有导航在当前 WebView 中进行
-            return NavigationActionPolicy.ALLOW;
+            final uri = navigationAction.request.url;
+            if (uri == null) {
+              return NavigationActionPolicy.ALLOW;
+            }
+
+            final urlString = uri.toString();
+            final initialUri = Uri.parse(widget.initialUrl);
+
+            // 如果是初始URL，允许加载
+            if (urlString == widget.initialUrl) {
+              return NavigationActionPolicy.ALLOW;
+            }
+
+            // 如果是同一域名的链接，允许在 WebView 中加载
+            if (uri.host == initialUri.host) {
+              return NavigationActionPolicy.ALLOW;
+            }
+
+            // 对于外部链接（不同域名），使用默认浏览器打开
+            // ignore: avoid_print
+            print('[WebView] 检测到外部链接，使用默认浏览器打开: $urlString');
+            try {
+              if (await canLaunchUrl(uri)) {
+                await launchUrl(
+                  uri,
+                  mode: LaunchMode.externalApplication, // 使用外部浏览器
+                );
+                // ignore: avoid_print
+                print('[WebView] 已在默认浏览器中打开: $urlString');
+              } else {
+                // ignore: avoid_print
+                print('[WebView] 无法打开URL: $urlString');
+              }
+            } catch (e) {
+              // ignore: avoid_print
+              print('[WebView] 打开默认浏览器失败: $e');
+            }
+
+            // 取消在 WebView 中的导航
+            return NavigationActionPolicy.CANCEL;
           },
           onEnterFullscreen: (controller) {
             // 进入全屏模式
@@ -165,48 +204,124 @@ class _AppWebViewState extends State<AppWebView> {
             // ignore: avoid_print
             print('[WebView] URL: $url');
 
-            // 检查是否是视频URL
-            if (url != null) {
-              final urlString = url.toString();
-
-              // 如果是视频文件，尝试触发原生全屏
-              if (urlString.contains('.m3u8') ||
-                  urlString.contains('.mp4') ||
-                  urlString.contains('.ts') ||
-                  urlString.contains('video')) {
-                // ignore: avoid_print
-                print('[WebView] 检测到视频URL，尝试触发原生全屏');
-
-                // 注入 JavaScript 尝试触发 video 元素的全屏
-                try {
-                  await controller.evaluateJavascript(source: '''
-                    (function() {
-                      var videos = document.getElementsByTagName('video');
-                      if (videos.length > 0) {
-                        var video = videos[0];
-                        if (video.webkitEnterFullscreen) {
-                          video.webkitEnterFullscreen();
-                        } else if (video.requestFullscreen) {
-                          video.requestFullscreen();
-                        }
-                        return 'fullscreen triggered';
-                      }
-                      return 'no video found';
-                    })();
-                  ''');
-                  // ignore: avoid_print
-                  print('[WebView] 已尝试触发视频全屏');
-                } catch (e) {
-                  // ignore: avoid_print
-                  print('[WebView] 触发全屏失败: $e');
-                }
-
-                // 返回 true 阻止打开新窗口
-                return true;
-              }
+            if (url == null) {
+              return true;
             }
 
-            // 对于非视频URL，也阻止打开新窗口
+            final urlString = url.toString();
+            final initialUri = Uri.parse(widget.initialUrl);
+
+            // 1. 优先检查是否是视频URL
+            if (urlString.contains('.m3u8') ||
+                urlString.contains('.mp4') ||
+                urlString.contains('.ts') ||
+                urlString.contains('video')) {
+              // ignore: avoid_print
+              print('[WebView] 检测到视频URL，尝试触发iOS系统播放器');
+
+              // 注入 JavaScript 尝试触发 video 元素的全屏
+              try {
+                final result = await controller.evaluateJavascript(source: '''
+                  (function() {
+                    // 查找所有 video 元素
+                    var videos = document.getElementsByTagName('video');
+                    console.log('找到 ' + videos.length + ' 个 video 元素');
+
+                    if (videos.length > 0) {
+                      // 优先查找正在播放或已暂停但有内容的视频
+                      var targetVideo = null;
+
+                      for (var i = 0; i < videos.length; i++) {
+                        var video = videos[i];
+                        // 检查视频是否有内容（duration > 0）或正在播放
+                        if (!video.paused || video.currentTime > 0 || video.duration > 0) {
+                          targetVideo = video;
+                          console.log('找到目标视频: ' + i + ', 状态: paused=' + video.paused + ', currentTime=' + video.currentTime);
+                          break;
+                        }
+                      }
+
+                      // 如果没有找到正在播放的，就用第一个
+                      if (!targetVideo && videos.length > 0) {
+                        targetVideo = videos[0];
+                        console.log('使用第一个视频元素');
+                      }
+
+                      if (targetVideo) {
+                        console.log('尝试全屏播放');
+                        // 先确保视频已加载
+                        if (targetVideo.readyState >= 2) {
+                          console.log('视频已准备好，readyState=' + targetVideo.readyState);
+                        }
+
+                        // iOS 使用 webkitEnterFullscreen
+                        if (targetVideo.webkitEnterFullscreen) {
+                          console.log('调用 webkitEnterFullscreen');
+                          targetVideo.webkitEnterFullscreen();
+                          return 'iOS fullscreen triggered';
+                        } else if (targetVideo.requestFullscreen) {
+                          console.log('调用 requestFullscreen');
+                          targetVideo.requestFullscreen();
+                          return 'HTML5 fullscreen triggered';
+                        } else {
+                          console.log('不支持全屏');
+                          return 'fullscreen not supported';
+                        }
+                      }
+                    }
+                    return 'no video found';
+                  })();
+                ''');
+                // ignore: avoid_print
+                print('[WebView] JavaScript 执行结果: $result');
+              } catch (e) {
+                // ignore: avoid_print
+                print('[WebView] 触发全屏失败: $e');
+              }
+
+              // 返回 true 阻止打开新窗口
+              return true;
+            }
+
+            // 2. 检查是否是同域名链接
+            if (url.host == initialUri.host) {
+              // ignore: avoid_print
+              print('[WebView] 检测到同域名链接，在 WebView 内加载: $urlString');
+              try {
+                // 在当前 WebView 中加载该 URL
+                await controller.loadUrl(
+                  urlRequest: URLRequest(url: url),
+                );
+                // ignore: avoid_print
+                print('[WebView] 已在 WebView 内加载同域名链接');
+              } catch (e) {
+                // ignore: avoid_print
+                print('[WebView] 在 WebView 内加载失败: $e');
+              }
+              return true;
+            }
+
+            // 3. 外部域名链接，使用默认浏览器打开
+            // ignore: avoid_print
+            print('[WebView] 检测到外部域名链接，使用默认浏览器打开: $urlString');
+            try {
+              if (await canLaunchUrl(url)) {
+                await launchUrl(
+                  url,
+                  mode: LaunchMode.externalApplication, // 使用外部浏览器
+                );
+                // ignore: avoid_print
+                print('[WebView] 已在默认浏览器中打开: $urlString');
+              } else {
+                // ignore: avoid_print
+                print('[WebView] 无法打开URL: $urlString');
+              }
+            } catch (e) {
+              // ignore: avoid_print
+              print('[WebView] 打开默认浏览器失败: $e');
+            }
+
+            // 阻止创建新窗口
             return true;
           },
         ),
